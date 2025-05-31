@@ -18,7 +18,7 @@ public struct ToastStatus: Equatable, Identifiable {
     // MARK: - Convenience Intitializers
     
     /// Initialize with a registered toast identified by a unique ID.
-    init(id: some Hashable) {
+    public init(id: some Hashable) {
         if let toast = Toast.from(id: id) {
             self = .init(toast: toast)
         } else {
