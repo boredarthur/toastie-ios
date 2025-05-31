@@ -15,7 +15,7 @@ public struct ToastStatus: Equatable, Identifiable {
         case dismissed
     }
     
-    // MARK: - Convenience Intitializers
+    // MARK: - Convenience Initializers
     
     /// Initialize with a registered toast identified by a unique ID.
     public init(id: some Hashable) {
