@@ -36,31 +36,70 @@ struct ToastView: View {
 private extension ToastView {
     var standardToastContent: some View {
         HStack(spacing: 12) {
-            // Icon
-            if let icon = toast.icon {
+            if let icon = toast.icon,
+               icon != ToastIcon.none,
+               configuration.textAlignment == .leading {
                 iconView(icon)
                     .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
                     .font(.system(size: theme.iconSize))
             }
             
-            // Text Content
-            Text(toast.message)
-                .font(theme.messageFont)
-                .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+            if configuration.textAlignment == .center || configuration.textAlignment == .trailing {
+                if toast.icon != ToastIcon.none && configuration.textAlignment == .center {
+                    Spacer()
+                } else if configuration.textAlignment == .trailing {
+                    Spacer()
+                }
+            }
             
-            Spacer()
-            
-            // Buttons
-            if !toast.buttons.isEmpty {
-                HStack(spacing: 8) {
-                    ForEach(toast.buttons, id: \.self) { button in
-                        Button(action: button.action) {
-                            Text(button.title)
-                                .font(theme.buttonFont)
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+            VStack(alignment: configuration.textAlignment == .leading ? .leading : 
+                    configuration.textAlignment == .trailing ? .trailing : .center) {
+                HStack {
+                    if let icon = toast.icon, configuration.textAlignment == .center {
+                        iconView(icon)
+                            .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+                            .font(.system(size: theme.iconSize))
                     }
+                    
+                    Text(toast.message)
+                        .font(theme.messageFont)
+                        .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+                        .multilineTextAlignment(configuration.textAlignment == .leading ? .leading :
+                                                    configuration.textAlignment == .trailing ? .trailing : .center)
+                    
+                    if let icon = toast.icon, configuration.textAlignment == .trailing {
+                        iconView(icon)
+                            .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+                            .font(.system(size: theme.iconSize))
+                    }
+                }
+                
+                if !toast.buttons.isEmpty {
+                    HStack(spacing: 8) {
+                        if configuration.textAlignment == .trailing || configuration.textAlignment == .center {
+                            Spacer()
+                        }
+                        
+                        ForEach(toast.buttons, id: \.self) { button in
+                            Button(action: button.action) {
+                                Text(button.title)
+                                    .font(theme.buttonFont)
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+                        }
+                        
+                        if configuration.textAlignment == .leading {
+                            Spacer()
+                        }
+                    }
+                    .padding(.top, 4)
+                }
+            }
+            
+            if configuration.textAlignment == .leading || configuration.textAlignment == .center {
+                if toast.buttons.isEmpty {
+                    Spacer()
                 }
             }
         }
@@ -79,6 +118,8 @@ private extension ToastView {
     @ViewBuilder
     func iconView(_ icon: ToastIcon) -> some View {
         switch icon {
+        case .none:
+            EmptyView()
         case .systemImage(let name):
             Image(systemName: name)
         case .image(let name):

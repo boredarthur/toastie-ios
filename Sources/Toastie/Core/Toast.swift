@@ -229,6 +229,7 @@ public extension Toast {
 
 /// Icon representation for toasts
 public enum ToastIcon: Equatable {
+    case none
     case systemImage(String)
     case image(String)
     case view(AnyView)
