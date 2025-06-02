@@ -1,10 +1,3 @@
-//
-//  SwiftUIView.swift
-//  Toastie
-//
-//  Created by Arthur Zavolovych on 31.05.2025.
-//
-
 //===--- CustomContentExample.swift -----------------------------------------===//
 
 import SwiftUI

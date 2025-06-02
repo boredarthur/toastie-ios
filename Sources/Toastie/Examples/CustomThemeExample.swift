@@ -29,6 +29,7 @@ struct CustomThemeExample: View {
                         infoColors: .gradient([.blue, .purple]),
                         messageFont: .callout,
                         cornerRadius: 20,
+                        shadow: .disabled,
                         iconSize: 24
                     )
                 )

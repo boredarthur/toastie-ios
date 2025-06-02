@@ -70,12 +70,7 @@ private extension ToastView {
             theme.colorStyle(for: toast.type).background()
                 .cornerRadius(theme.cornerRadius)
         )
-        .shadow(
-            color: .black.opacity(0.1),
-            radius: theme.shadowRadius,
-            x: 0,
-            y: 2
-        )
+        .applyShadow(theme.shadow)
     }
 }
 
@@ -116,5 +111,23 @@ private extension ToastView {
                     }
                 }
             }
+    }
+}
+
+// MARK: - Handle Shadows
+private extension View {
+    @ViewBuilder
+    func applyShadow(_ shadowStyle: ShadowStyle) -> some View {
+        switch shadowStyle {
+        case .disabled:
+            self
+        case .enabled(let radius, let opacity, let offset):
+            self.shadow(
+                color: .black.opacity(opacity),
+                radius: radius,
+                x: offset.x,
+                y: offset.y
+            )
+        }
     }
 }

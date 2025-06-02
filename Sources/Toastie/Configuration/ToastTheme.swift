@@ -17,7 +17,7 @@ public struct ToastTheme: Hashable {
     // MARK: - Layout
     public var padding: EdgeInsets
     public var cornerRadius: CGFloat
-    public var shadowRadius: CGFloat
+    public var shadow: ShadowStyle
     public var iconSize: CGFloat
     
     public init(
@@ -29,7 +29,7 @@ public struct ToastTheme: Hashable {
         buttonFont: Font = .callout.weight(.medium),
         padding: EdgeInsets = .init(top: 12, leading: 16, bottom: 12, trailing: 16),
         cornerRadius: CGFloat = 12,
-        shadowRadius: CGFloat = 4,
+        shadow: ShadowStyle = .default,
         iconSize: CGFloat = 20
     ) {
         self.errorColors = errorColors
@@ -40,7 +40,7 @@ public struct ToastTheme: Hashable {
         self.buttonFont = buttonFont
         self.padding = padding
         self.cornerRadius = cornerRadius
-        self.shadowRadius = shadowRadius
+        self.shadow = shadow
         self.iconSize = iconSize
     }
     
@@ -53,7 +53,7 @@ public struct ToastTheme: Hashable {
         hasher.combine(messageFont)
         hasher.combine(buttonFont)
         hasher.combine(cornerRadius)
-        hasher.combine(shadowRadius)
+        hasher.combine(shadow)
         hasher.combine(iconSize)
     }
     
@@ -91,35 +91,6 @@ public struct ToastTheme: Hashable {
             return infoColors
         case .custom:
             return .solid(.gray) // Default for custom
-        }
-    }
-}
-
-/// Color style options
-public enum ColorStyle: Hashable {
-    case solid(Color)
-    case gradient([Color])
-    
-    @ViewBuilder
-    func background() -> some View {
-        switch self {
-        case .solid(let color):
-            color
-        case .gradient(let colors):
-            LinearGradient(
-                colors: colors,
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-        }
-    }
-    
-    var foregroundColor: Color {
-        switch self {
-        case .solid(let color):
-            return color.opacity(1) == Color.clear ? .primary : .white
-        case .gradient:
-            return .white
         }
     }
 }
