@@ -180,16 +180,22 @@ private extension ToastView {
     var shouldAddLeadingSpacer: Bool {
         let hasIcon = toast.icon != nil
         
+        // Determine whether to add a leading spacer based on text alignment
         switch configuration.textAlignment {
         case .center:
+            // Add a spacer if there is an icon for center alignment
             return hasIcon
         case .trailing:
+            // Always add a spacer for trailing alignment
             return true
         default:
+            // Do not add a spacer for leading alignment
             return false
         }
     }
     
+    /// Determines whether a spacer should be added for trailing alignment.
+    /// A spacer is added when the text alignment is `.leading` or `.center` and there are no buttons.
     var shouldAddTrailingSpacer: Bool {
         let hasButtons = !toast.buttons.isEmpty
         
