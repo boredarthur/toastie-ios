@@ -36,72 +36,9 @@ struct ToastView: View {
 private extension ToastView {
     var standardToastContent: some View {
         HStack(spacing: 12) {
-            if let icon = toast.icon,
-               icon != ToastIcon.none,
-               configuration.textAlignment == .leading {
-                iconView(icon)
-                    .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
-                    .font(.system(size: theme.iconSize))
-            }
-            
-            if configuration.textAlignment == .center || configuration.textAlignment == .trailing {
-                if toast.icon != ToastIcon.none && configuration.textAlignment == .center {
-                    Spacer()
-                } else if configuration.textAlignment == .trailing {
-                    Spacer()
-                }
-            }
-            
-            VStack(alignment: configuration.textAlignment == .leading ? .leading : 
-                    configuration.textAlignment == .trailing ? .trailing : .center) {
-                HStack {
-                    if let icon = toast.icon, configuration.textAlignment == .center {
-                        iconView(icon)
-                            .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
-                            .font(.system(size: theme.iconSize))
-                    }
-                    
-                    Text(toast.message)
-                        .font(theme.messageFont)
-                        .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
-                        .multilineTextAlignment(configuration.textAlignment == .leading ? .leading :
-                                                    configuration.textAlignment == .trailing ? .trailing : .center)
-                    
-                    if let icon = toast.icon, configuration.textAlignment == .trailing {
-                        iconView(icon)
-                            .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
-                            .font(.system(size: theme.iconSize))
-                    }
-                }
-                
-                if !toast.buttons.isEmpty {
-                    HStack(spacing: 8) {
-                        if configuration.textAlignment == .trailing || configuration.textAlignment == .center {
-                            Spacer()
-                        }
-                        
-                        ForEach(toast.buttons, id: \.self) { button in
-                            Button(action: button.action) {
-                                Text(button.title)
-                                    .font(theme.buttonFont)
-                            }
-                            .buttonStyle(.plain)
-                            .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
-                        }
-                        
-                        if configuration.textAlignment == .leading {
-                            Spacer()
-                        }
-                    }
-                    .padding(.top, 4)
-                }
-            }
-            
-            if configuration.textAlignment == .leading || configuration.textAlignment == .center {
-                if toast.buttons.isEmpty {
-                    Spacer()
-                }
-            }
+            leadingContent
+            mainContent
+            trailingContent
         }
         .padding(theme.padding)
         .frame(maxWidth: configuration.maxWidth)
@@ -117,16 +54,20 @@ private extension ToastView {
 private extension ToastView {
     @ViewBuilder
     func iconView(_ icon: ToastIcon) -> some View {
-        switch icon {
-        case .none:
-            EmptyView()
-        case .systemImage(let name):
-            Image(systemName: name)
-        case .image(let name):
-            Image(name)
-        case .view(let view):
-            view
+        Group {
+            switch icon {
+            case .systemImage(let name):
+                Image(systemName: name)
+            case .image(let name):
+                Image(name)
+            case .view(let view):
+                view
+            case .none:
+                EmptyView()
+            }
         }
+        .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+        .font(.system(size: theme.iconSize))
     }
 }
 
@@ -169,6 +110,106 @@ private extension View {
                 x: offset.x,
                 y: offset.y
             )
+        }
+    }
+}
+
+// MARK: - Content Helpers
+private extension ToastView {
+    @ViewBuilder
+    var leadingContent: some View {
+        if configuration.textAlignment == .leading, let icon = toast.icon {
+            iconView(icon)
+        } else if shouldAddLeadingSpacer {
+            Spacer()
+        }
+    }
+    
+    var mainContent: some View {
+        VStack(alignment: configuration.textAlignment) {
+            HStack {
+                if configuration.textAlignment == .center, let icon = toast.icon {
+                    iconView(icon)
+                }
+                
+                Text(toast.message)
+                    .font(theme.messageFont)
+                    .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+                    .multilineTextAlignment(textAlignmentFromHorizontal(configuration.textAlignment))
+                
+                if configuration.textAlignment == .trailing, let icon = toast.icon {
+                    iconView(icon)
+                }
+            }
+            
+            if !toast.buttons.isEmpty {
+                buttonRow
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var trailingContent: some View {
+        if shouldAddTrailingSpacer {
+            Spacer()
+        }
+    }
+    
+    var buttonRow: some View {
+        HStack(spacing: 8) {
+            if configuration.textAlignment == .trailing {
+                Spacer()
+            }
+            
+            ForEach(toast.buttons, id: \.self) { button in
+                Button(action: button.action) {
+                    Text(button.title)
+                        .font(theme.buttonFont)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(theme.colorStyle(for: toast.type).foregroundColor)
+            }
+            
+            if configuration.textAlignment == .leading {
+                Spacer()
+            }
+        }
+        .padding(.top, 4)
+    }
+    
+    var shouldAddLeadingSpacer: Bool {
+        let hasIcon = toast.icon != nil
+        
+        switch configuration.textAlignment {
+        case .center:
+            return hasIcon
+        case .trailing:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    var shouldAddTrailingSpacer: Bool {
+        let hasButtons = !toast.buttons.isEmpty
+        
+        switch configuration.textAlignment {
+        case .leading, .center:
+            return !hasButtons
+        default:
+            return false
+        }
+    }
+}
+
+// MARK: - textAlignmentFromHorizontal
+private extension ToastView {
+    func textAlignmentFromHorizontal(_ horizontal: HorizontalAlignment) -> TextAlignment {
+        switch horizontal {
+        case .leading: return .leading
+        case .center: return .center
+        case .trailing: return .trailing
+        default: return .leading
         }
     }
 }
