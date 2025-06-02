@@ -11,6 +11,7 @@ A modern, flexible, and beautiful toast notification system for SwiftUI.
 ✨ **Modern API** - Clean and intuitive `ToastStatus` binding for state management  
 🎨 **Customizable Themes** - Built-in themes (default, vibrant, subtle) or create your own  
 🎯 **Multiple Toast Types** - Error, success, warning, info, and custom  
+📐 **Text Alignment** - Configure text alignment (leading, center, trailing) for perfect layouts  
 🎮 **Interactive** - Support for action buttons and gesture-based dismissal  
 📍 **Flexible Positioning** - Top, bottom, center, or custom positions  
 📱 **Haptic Feedback** - Native haptic feedback support  
@@ -27,14 +28,14 @@ Add Toastie to your project via Swift Package Manager:
 
 1. In Xcode, go to **File > Add Package Dependencies...**
 2. Enter the repository URL: `https://github.com/boredarthur/toastie-ios.git`
-3. Select version **1.0.0** or later
+3. Select version **1.0.1** or later
 4. Click **Add Package**
 
 Or add it to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/boredarthur/toastie-ios.git", from: "1.0.0")
+    .package(url: "https://github.com/boredarthur/toastie-ios.git", from: "1.0.1")
 ]
 ```
 
@@ -104,6 +105,15 @@ toastStatus = .init(
 )
 ```
 
+### Text Alignment
+
+Configure how text is aligned within your toasts:
+
+```swift
+// Center-aligned toast
+.toast(status: $toastStatus, configuration: ToastConfiguration(textAlignment: .center))
+```
+
 ### Custom Toast Content
 
 Create completely custom toast views for unique scenarios:
@@ -167,12 +177,25 @@ let customTheme = ToastTheme(
     successColors: .gradient([.green, .mint]),
     messageFont: .headline,
     cornerRadius: 20,
+    shadow: .strong,
     iconSize: 24
 )
 
 .toast(
     status: $toastStatus, 
     configuration: ToastConfiguration(theme: customTheme)
+)
+
+// Disable shadows completely
+let minimalTheme = ToastTheme(
+    errorColors: .solid(.red),
+    successColors: .solid(.green),
+    shadow: .disabled
+)
+
+// Toast without icon
+toastStatus = .init(
+    toast: .info("Clean message", icon: .none)
 )
 ```
 
@@ -186,6 +209,7 @@ let config = ToastConfiguration(
     defaultDuration: 3.0,
     tapToDismiss: true,
     swipeToDismiss: true,
+    textAlignment: .center,
     animation: .spring(response: 0.3, dampingFraction: 0.6),
     maxWidth: 400,
     horizontalPadding: 20
