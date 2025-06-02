@@ -22,6 +22,7 @@ public struct ToastConfiguration {
     // MARK: - Layout
     public var maxWidth: CGFloat
     public var horizontalPadding: CGFloat
+    public var textAlignment: HorizontalAlignment
     
     public init(
         theme: ToastTheme = .default,
@@ -30,7 +31,8 @@ public struct ToastConfiguration {
         swipeToDismiss: Bool = true,
         animation: Animation = .spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0),
         maxWidth: CGFloat = 600,
-        horizontalPadding: CGFloat = 16
+        horizontalPadding: CGFloat = 16,
+        textAlignment: HorizontalAlignment = .leading
     ) {
         self.theme = theme
         self.defaultDuration = defaultDuration
@@ -39,5 +41,6 @@ public struct ToastConfiguration {
         self.animation = animation
         self.maxWidth = maxWidth
         self.horizontalPadding = horizontalPadding
+        self.textAlignment = textAlignment
     }
 }
